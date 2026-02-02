@@ -74,8 +74,11 @@ class ConversationUser(JsonApiMixin):
         verbose_name = 'Участник беседы'
         verbose_name_plural = 'Участники бесед'
 
-    def __str__(self):
+    def get_name(self):
         return 'id=%s, conversation_id=%s' % (self.id, self.conversation_id)
+
+    def __str__(self):
+        return self.get_name()
 
 
 class ConversationMessage(JsonApiMixin, AbstractDateTimeModel):
@@ -90,8 +93,11 @@ class ConversationMessage(JsonApiMixin, AbstractDateTimeModel):
         verbose_name = 'Сообщение беседы'
         verbose_name_plural = 'Сообщения по беседам'
 
-    def __str__(self):
+    def get_name(self):
         return 'id=%s, %s' % (self.id, self.text)
+
+    def __str__(self):
+        return self.get_name()
 
     def delete(self, *args, **kwargs):
         """Удаление сообщения беседы
@@ -135,5 +141,8 @@ class ConversationMessageState(JsonApiMixin):
         verbose_name = 'Состояние сообщения'
         verbose_name_plural = 'Состояния сообщений'
 
-    def __str__(self):
+    def get_name(self):
         return 'id=%s, %s' % (self.id, self.get_state_display())
+
+    def __str__(self):
+        return self.get_name()
