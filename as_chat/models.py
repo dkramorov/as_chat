@@ -116,11 +116,29 @@ class ConversationMessage(JsonApiMixin, AbstractDateTimeModel):
             'updated_at',
         )
 
+    @staticmethod
+    def prefetch_conversations(rows: list):
+        """Предварительное получение всех бесед по списку rows
+           :param rows: Queryset из ConversationMessage
+        """
+        ids_conversations = list(set([row.conversation_id for row in rows]))
+        conversation_model = [
+            field for field in ConversationMessage._meta.model._meta.fields if field.name =='conversation'
+        ][0].related_model
+        conversations = conversation_model.objects.filter(pk__in=ids_conversations)
+        ids_conversations = {conversation.id: conversation for conversation in conversations}
+        for row in rows:
+            setattr(row, 'conversation_cached', ids_conversations.get(row.conversation_id))
+
     def get_conversation(self) -> dict:
-        """Получение беседы по сообщению"""
-        if not self.conversation_id:
+        """Получение беседы по сообщению
+        """
+        if not hasattr(self, 'conversation_cached'):
             return {}
-        return self.conversation.get_conversation
+        conversation = getattr(self, 'conversation_cached')
+        if not conversation:
+            return {}
+        return conversation.get_conversation
 
 
 class ConversationMessageState(JsonApiMixin):
