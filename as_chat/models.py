@@ -141,7 +141,7 @@ class ConversationMessage(JsonApiMixin, AbstractDateTimeModel):
         return conversation.get_conversation
 
 
-class ConversationMessageState(JsonApiMixin):
+class ConversationMessageState(JsonApiMixin, AbstractShortDateTimeModel):
     """Состояние сообщения
     """
     state_choices = (
